@@ -3,7 +3,7 @@ from datetime import datetime
 invoices: list[dict] = [
     {
         "id": "5a0879b259664193bd0a2d1bdbc31cba",
-        "created_at": datetime(2021, 8, 18),
+        "created_at": datetime(2021, 8, 18, 7, 48, 32),
         "payment_due": datetime(2021, 8, 19),
         "description": "Re-branding",
         "payment_terms": 1,
