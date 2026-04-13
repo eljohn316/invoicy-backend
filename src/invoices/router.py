@@ -15,14 +15,14 @@ router = APIRouter(prefix="/invoices", tags=["invoices"])
 
 
 @router.get("/", name="Get all invoices", response_model=list[InvoiceItem])
-def get_invoices_handler(db: DatabaseDep):
-    invoices = get_invoices(db)
+async def get_invoices_handler(db: DatabaseDep):
+    invoices = await get_invoices(db)
     return invoices
 
 
 @router.get("/{invoice_id}", name="Get invoice", response_model=InvoiceOut)
-def get_invoice_handler(invoice_id: str, db: DatabaseDep):
-    invoice = get_invoice(db, invoice_id)
+async def get_invoice_handler(invoice_id: str, db: DatabaseDep):
+    invoice = await get_invoice(db, invoice_id)
     if invoice is None:
         raise InvoiceNotFound()
     return invoice
@@ -34,8 +34,8 @@ def get_invoice_handler(invoice_id: str, db: DatabaseDep):
     response_model=InvoiceOut,
     status_code=status.HTTP_201_CREATED,
 )
-def create_invoice_handler(invoice_data: InvoiceCreate, db: DatabaseDep):
-    new_invoice = create_invoice(db, invoice_data)
+async def create_invoice_handler(invoice_data: InvoiceCreate, db: DatabaseDep):
+    new_invoice = await create_invoice(db, invoice_data)
     return new_invoice
 
 
@@ -44,15 +44,15 @@ def create_invoice_handler(invoice_data: InvoiceCreate, db: DatabaseDep):
     name="Update invoice",
     response_model=InvoiceOut,
 )
-def update_invoice_handler(
+async def update_invoice_handler(
     invoice_id: str,
     invoice_data: InvoiceUpdate,
     db: DatabaseDep,
 ):
-    invoice = get_invoice(db, invoice_id)
+    invoice = await get_invoice(db, invoice_id)
     if invoice is None:
         raise InvoiceNotFound()
-    updated_invoice = update_invoice(db, invoice, invoice_data)
+    updated_invoice = await update_invoice(db, invoice, invoice_data)
     return updated_invoice
 
 
@@ -61,8 +61,8 @@ def update_invoice_handler(
     name="Delete invoice",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def delete_invoice_handler(invoice_id: str, db: DatabaseDep):
-    invoice = get_invoice(db, invoice_id)
+async def delete_invoice_handler(invoice_id: str, db: DatabaseDep):
+    invoice = await get_invoice(db, invoice_id)
     if invoice is None:
         raise InvoiceNotFound()
-    delete_invoice(db, invoice)
+    await delete_invoice(db, invoice)
