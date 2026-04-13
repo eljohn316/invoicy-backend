@@ -56,6 +56,17 @@ class InvoiceCreate(InvoiceBase):
     pass
 
 
+class InvoiceUpdate(BaseSchemaModel):
+    description: str | None = None
+    payment_terms: int | None = None
+    client_name: str | None = None
+    client_email: EmailStr | None = None
+    status: Literal["draft", "pending", "paid"] | None = None
+    sender_address: Address | None = None
+    client_address: Address | None = None
+    items: list[Item] | None = None
+
+
 InvoiceItem = make_new_model(
     "InvoiceItem",
     InvoiceOut,
