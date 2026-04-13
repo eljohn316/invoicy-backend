@@ -5,8 +5,10 @@ build/
 dist/
 wheels/
 *.egg-info
+.ruff_cache/
 
 # Virtual environments
 .venv
 
+# App-generated files
 *.db

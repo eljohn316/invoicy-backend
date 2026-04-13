@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import ResponseValidationError
+from fastapi.responses import JSONResponse
 
 from src.database import Base, engine
 from src.invoices.router import router as invoice_router
@@ -18,3 +21,14 @@ app = FastAPI(title="Invoices App API", root_path="/api", lifespan=lifespan)
 
 
 app.include_router(invoice_router)
+
+
+@app.exception_handler(ResponseValidationError)
+async def response_validation_exception_handler(
+    request: Request,
+    exc: ResponseValidationError,
+):
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+    )
