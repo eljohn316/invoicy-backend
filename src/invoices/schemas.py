@@ -1,15 +1,10 @@
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Literal
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    EmailStr,
-    Field,
-    computed_field,
-    create_model,
-)
+from pydantic import BaseModel, ConfigDict, EmailStr, computed_field
 from pydantic.alias_generators import to_camel
+
+from ..utils import make_new_model
 
 
 class BaseSchemaModel(BaseModel):
@@ -59,32 +54,6 @@ class InvoiceOut(InvoiceBase):
 
 class InvoiceCreate(InvoiceBase):
     pass
-
-
-def make_new_model(
-    model_name: str, model_cls: type[BaseModel], fields: set | None = None
-) -> type[BaseModel]:
-    new_fields = {}
-
-    for f_name, f_info in model_cls.model_fields.items():
-        if not fields or f_name not in fields:
-            continue
-
-        f_dct = f_info.asdict()
-        new_fields[f_name] = (
-            Annotated[
-                f_dct.get("annotation"),
-                *f_dct.get("metadata"),
-                Field(**f_dct.get("attributes")),
-            ],
-            None,
-        )
-
-    return create_model(
-        model_name,
-        __config__=model_cls.model_config,
-        **new_fields,
-    )
 
 
 InvoiceItem = make_new_model(
