@@ -39,3 +39,8 @@ def update_invoice(
     db.commit()
     db.refresh(invoice)
     return invoice
+
+
+def delete_invoice(db: DatabaseDep, invoice: models.Invoice):
+    db.delete(invoice)
+    db.commit()

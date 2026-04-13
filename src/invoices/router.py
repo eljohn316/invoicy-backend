@@ -3,7 +3,13 @@ from fastapi import APIRouter, status
 from ..dependencies import DatabaseDep
 from .exceptions import InvoiceNotFound
 from .schemas import InvoiceCreate, InvoiceItem, InvoiceOut, InvoiceUpdate
-from .services import create_invoice, get_invoice, get_invoices, update_invoice
+from .services import (
+    create_invoice,
+    delete_invoice,
+    get_invoice,
+    get_invoices,
+    update_invoice,
+)
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
 
@@ -48,3 +54,15 @@ def update_invoice_handler(
         raise InvoiceNotFound()
     updated_invoice = update_invoice(db, invoice, invoice_data)
     return updated_invoice
+
+
+@router.delete(
+    "/{invoice_id}",
+    name="Delete invoice",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_invoice_handler(invoice_id: str, db: DatabaseDep):
+    invoice = get_invoice(db, invoice_id)
+    if invoice is None:
+        raise InvoiceNotFound()
+    delete_invoice(db, invoice)
