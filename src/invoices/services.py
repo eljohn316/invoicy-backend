@@ -2,14 +2,18 @@ from sqlalchemy import select
 
 from ..dependencies import DatabaseDep
 from . import models
-from .schemas import InvoiceCreate, InvoiceUpdate
+from .schemas import FilterParams, InvoiceCreate, InvoiceUpdate
 
 
-async def get_invoices(db: DatabaseDep):
-    result = await db.execute(
-        select(models.Invoice).order_by(models.Invoice.created_at.desc())
-    )
+async def get_invoices(db: DatabaseDep, filter_query: FilterParams):
+    query = select(models.Invoice).order_by(models.Invoice.created_at.desc())
+
+    if len(filter_query.status) >= 1:
+        query = query.where(models.Invoice.status.in_(filter_query.status))
+
+    result = await db.execute(query)
     invoices = result.scalars().all()
+
     return invoices
 
 

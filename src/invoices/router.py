@@ -1,8 +1,10 @@
-from fastapi import APIRouter, status
+from typing import Annotated
+
+from fastapi import APIRouter, Query, status
 
 from ..dependencies import DatabaseDep
 from .exceptions import InvoiceNotFound
-from .schemas import InvoiceCreate, InvoiceItem, InvoiceOut, InvoiceUpdate
+from .schemas import FilterParams, InvoiceCreate, InvoiceItem, InvoiceOut, InvoiceUpdate
 from .services import (
     create_invoice,
     delete_invoice,
@@ -15,8 +17,11 @@ router = APIRouter(prefix="/invoices", tags=["invoices"])
 
 
 @router.get("/", name="Get all invoices", response_model=list[InvoiceItem])
-async def get_invoices_handler(db: DatabaseDep):
-    invoices = await get_invoices(db)
+async def get_invoices_handler(
+    filter_query: Annotated[FilterParams, Query()],
+    db: DatabaseDep,
+):
+    invoices = await get_invoices(db, filter_query)
     return invoices
 
 

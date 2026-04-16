@@ -7,6 +7,12 @@ from pydantic.alias_generators import to_camel
 from ..utils import make_new_model
 
 
+class FilterParams(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    status: list[str] = []
+
+
 class BaseSchemaModel(BaseModel):
     model_config = ConfigDict(
         from_attributes=True,
