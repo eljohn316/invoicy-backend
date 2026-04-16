@@ -12,3 +12,5 @@ wheels/
 
 # App-generated files
 *.db
+
+data.json

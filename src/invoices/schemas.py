@@ -76,5 +76,6 @@ InvoiceItem = make_new_model(
         "payment_due",
         "client_name",
         "status",
+        "total",
     },
 )
