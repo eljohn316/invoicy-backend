@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import TypedDict
 
-from sqlalchemy import JSON, DateTime, Integer, String, Text
+from sqlalchemy import JSON, Date, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..database import Base
@@ -46,6 +46,7 @@ class Invoice(Base):
     sender_address: Mapped[Address] = mapped_column(JSON, nullable=False)
     client_address: Mapped[Address] = mapped_column(JSON, nullable=False)
     items: Mapped[Item] = mapped_column(JSON, nullable=False)
+    date_issued: Mapped[datetime] = mapped_column(Date)
 
     @property
     def total(self) -> float:

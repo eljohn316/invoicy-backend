@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, computed_field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field
 from pydantic.alias_generators import to_camel
 
 from ..utils import make_new_model
@@ -49,6 +49,7 @@ class InvoiceBase(BaseSchemaModel):
     sender_address: Address
     client_address: Address
     items: list[Item]
+    date_issued: date = Field(default_factory=lambda: date.today())
 
 
 class InvoiceOut(InvoiceBase):
@@ -78,7 +79,6 @@ InvoiceItem = make_new_model(
     InvoiceOut,
     {
         "id",
-        "created_at",
         "payment_due",
         "client_name",
         "status",
