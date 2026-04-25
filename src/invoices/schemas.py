@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, Union
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field
 from pydantic.alias_generators import to_camel
@@ -44,7 +44,7 @@ class InvoiceBase(BaseSchemaModel):
     description: str
     payment_terms: int
     client_name: str
-    client_email: EmailStr
+    client_email: Union[Literal[""], EmailStr] = Field(union_mode="left_to_right")
     status: Literal["draft", "pending", "paid"]
     sender_address: Address
     client_address: Address
