@@ -57,4 +57,4 @@ class Invoice(Base):
 
     @property
     def payment_due(self) -> datetime:
-        return self.created_at + timedelta(days=self.payment_terms)
+        return self.date_issued + timedelta(days=self.payment_terms)

@@ -72,6 +72,7 @@ class InvoiceUpdate(BaseSchemaModel):
     sender_address: Address | None = None
     client_address: Address | None = None
     items: list[Item] | None = None
+    date_issued: date | None = None
 
 
 InvoiceItem = make_new_model(
