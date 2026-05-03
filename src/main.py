@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from src.database import Base, engine
 from src.invoices.router import router as invoice_router
+from src.users.router import router as user_router
 
 
 @asynccontextmanager
@@ -34,6 +35,7 @@ app.add_middleware(
 )
 
 app.include_router(invoice_router)
+app.include_router(user_router)
 
 
 @app.exception_handler(ResponseValidationError)
