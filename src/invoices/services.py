@@ -1,11 +1,11 @@
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..dependencies import DatabaseDep
 from . import models
 from .schemas import FilterParams, InvoiceCreate, InvoiceUpdate
 
 
-async def get_invoices(db: DatabaseDep, filter_query: FilterParams):
+async def get_invoices(db: AsyncSession, filter_query: FilterParams):
     query = select(models.Invoice).order_by(models.Invoice.created_at.desc())
 
     if len(filter_query.status) >= 1:
@@ -17,7 +17,7 @@ async def get_invoices(db: DatabaseDep, filter_query: FilterParams):
     return invoices
 
 
-async def get_invoice(db: DatabaseDep, invoice_id: str):
+async def get_invoice(db: AsyncSession, invoice_id: str):
     result = await db.execute(
         select(models.Invoice).where(models.Invoice.id == invoice_id)
     )
@@ -25,7 +25,7 @@ async def get_invoice(db: DatabaseDep, invoice_id: str):
     return invoice
 
 
-async def create_invoice(db: DatabaseDep, invoice_data: InvoiceCreate):
+async def create_invoice(db: AsyncSession, invoice_data: InvoiceCreate):
     invoice_dict = invoice_data.model_dump(by_alias=False)
     new_invoice = models.Invoice(**invoice_dict)
     db.add(new_invoice)
@@ -35,7 +35,7 @@ async def create_invoice(db: DatabaseDep, invoice_data: InvoiceCreate):
 
 
 async def update_invoice(
-    db: DatabaseDep,
+    db: AsyncSession,
     invoice: models.Invoice,
     invoice_data: InvoiceUpdate,
 ):
@@ -47,6 +47,6 @@ async def update_invoice(
     return invoice
 
 
-async def delete_invoice(db: DatabaseDep, invoice: models.Invoice):
+async def delete_invoice(db: AsyncSession, invoice: models.Invoice):
     await db.delete(invoice)
     await db.commit()
