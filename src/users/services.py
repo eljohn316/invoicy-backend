@@ -34,3 +34,8 @@ async def get_user_by_email(db: AsyncSession, email: str):
     result = await db.execute(select(models.User).where(models.User.email == email))
     user = result.scalars().first()
     return user
+
+
+async def get_user_by_id(db: AsyncSession, user_id: int):
+    user = await db.get(models.User, user_id)
+    return user

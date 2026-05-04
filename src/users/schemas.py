@@ -1,6 +1,11 @@
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class UserBase(BaseModel):
     first_name: str = Field(min_length=1, max_length=50)
     last_name: str = Field(min_length=1, max_length=50)
