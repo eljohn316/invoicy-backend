@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from sqlalchemy import Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
+from ..invoices import models
 
 
 class User(Base):
@@ -24,6 +25,7 @@ class User(Base):
         nullable=True,
         default=None,
     )
+    invoices: Mapped[list[models.Invoice]] = relationship(back_populates="uploader")
 
     @property
     def full_name(self) -> str:

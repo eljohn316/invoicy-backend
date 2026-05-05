@@ -3,10 +3,11 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import TypedDict
 
-from sqlalchemy import JSON, Date, DateTime, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import JSON, Date, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
+from ..users import models
 from ..utils import generate_id
 
 Address = TypedDict(
@@ -45,8 +46,14 @@ class Invoice(Base):
     status: Mapped[str] = mapped_column(String, nullable=False)
     sender_address: Mapped[Address] = mapped_column(JSON, nullable=False)
     client_address: Mapped[Address] = mapped_column(JSON, nullable=False)
-    items: Mapped[Item] = mapped_column(JSON, nullable=False)
+    items: Mapped[list[Item]] = mapped_column(JSON, nullable=False)
     date_issued: Mapped[datetime] = mapped_column(Date)
+    poster_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True,
+    )
+    poster: Mapped[models.User] = relationship(back_populates="invoices")
 
     @property
     def total(self) -> float:
