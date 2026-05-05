@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from ..auth import CurrentUserDep
 from ..dependencies import DatabaseDep
 from .exceptions import InvoiceNotFound
 from .schemas import FilterParams, InvoiceCreate, InvoiceItem, InvoiceOut, InvoiceUpdate
@@ -39,8 +40,15 @@ async def get_invoice_handler(invoice_id: str, db: DatabaseDep):
     response_model=InvoiceOut,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_invoice_handler(invoice_data: InvoiceCreate, db: DatabaseDep):
-    new_invoice = await create_invoice(db, invoice_data)
+async def create_invoice_handler(
+    invoice_data: InvoiceCreate,
+    current_user: CurrentUserDep,
+    db: DatabaseDep,
+):
+    new_invoice = await create_invoice(
+        db,
+        {**invoice_data.model_dump(by_alias=False), "poster_id": current_user.id},
+    )
     return new_invoice
 
 

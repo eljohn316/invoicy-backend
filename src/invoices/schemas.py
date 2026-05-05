@@ -4,6 +4,7 @@ from typing import Literal, Union
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field
 from pydantic.alias_generators import to_camel
 
+from ..users.schemas import UserPublic
 from ..utils import make_new_model
 
 
@@ -57,6 +58,7 @@ class InvoiceOut(InvoiceBase):
     created_at: datetime
     payment_due: datetime
     total: float
+    poster: UserPublic
 
 
 class InvoiceCreate(InvoiceBase):

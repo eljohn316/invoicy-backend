@@ -1,8 +1,11 @@
+from typing import Any
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from . import models
-from .schemas import FilterParams, InvoiceCreate, InvoiceUpdate
+from .schemas import FilterParams, InvoiceUpdate
 
 
 async def get_invoices(db: AsyncSession, filter_query: FilterParams):
@@ -19,15 +22,16 @@ async def get_invoices(db: AsyncSession, filter_query: FilterParams):
 
 async def get_invoice(db: AsyncSession, invoice_id: str):
     result = await db.execute(
-        select(models.Invoice).where(models.Invoice.id == invoice_id)
+        select(models.Invoice)
+        .options(selectinload(models.Invoice.poster))
+        .where(models.Invoice.id == invoice_id)
     )
     invoice = result.scalars().first()
     return invoice
 
 
-async def create_invoice(db: AsyncSession, invoice_data: InvoiceCreate):
-    invoice_dict = invoice_data.model_dump(by_alias=False)
-    new_invoice = models.Invoice(**invoice_dict)
+async def create_invoice(db: AsyncSession, invoice_data: dict[str, Any]):
+    new_invoice = models.Invoice(**invoice_data)
     db.add(new_invoice)
     await db.commit()
     await db.refresh(new_invoice)

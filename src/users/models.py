@@ -25,7 +25,7 @@ class User(Base):
         nullable=True,
         default=None,
     )
-    invoices: Mapped[list[models.Invoice]] = relationship(back_populates="uploader")
+    invoices: Mapped[list[models.Invoice]] = relationship(back_populates="poster")
 
     @property
     def full_name(self) -> str:
