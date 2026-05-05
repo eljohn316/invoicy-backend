@@ -1,10 +1,15 @@
 from datetime import UTC, datetime, timedelta
+from typing import Annotated
 
 import jwt
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 
 from .config import settings
+from .dependencies import DatabaseDep
+from .exceptions import UnauthorizedException
+from .users import models
 
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/users/token")
@@ -51,3 +56,25 @@ def verify_access_token(token: str) -> str | None:
         return payload.get("sub")
     except jwt.InvalidTokenError:
         return None
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)], db: DatabaseDep
+):
+    user_id = verify_access_token(token)
+    if user_id is None:
+        raise UnauthorizedException(detail="Invalid or expired token")
+
+    try:
+        user_id_int = int(user_id)
+    except (TypeError, ValueError):
+        raise UnauthorizedException(detail="Invalid or expired token")
+
+    current_user = await db.get(models.User, user_id_int)
+    if current_user is None:
+        raise UnauthorizedException(detail="User not found")
+
+    return current_user
+
+
+CurrentUserDep = Annotated[models.User, Depends(get_current_user)]
