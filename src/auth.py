@@ -6,10 +6,10 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 
+from . import models
 from .config import settings
 from .dependencies import DatabaseDep
 from .exceptions import UnauthorizedException
-from .users import models
 
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/users/token")

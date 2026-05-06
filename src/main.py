@@ -6,8 +6,9 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.database import Base, engine
+from src.database import engine
 from src.invoices.router import router as invoice_router
+from src.models import Base
 from src.users.router import router as user_router
 
 

@@ -1,36 +1,37 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
 from ..auth import CurrentUserDep
 from ..dependencies import DatabaseDep
-from .exceptions import InvoiceNotFound
+from ..exceptions import ForbiddenException, NotFoundException
 from .schemas import FilterParams, InvoiceCreate, InvoiceItem, InvoiceOut, InvoiceUpdate
-from .services import (
-    create_invoice,
-    delete_invoice,
-    get_invoice,
-    get_invoices,
-    update_invoice,
-)
+from .services import InvoiceService
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
+
+
+def get_invoice_service(db: DatabaseDep):
+    return InvoiceService(db)
+
+
+InvoiceServiceDep = Annotated[InvoiceService, Depends(get_invoice_service)]
 
 
 @router.get("/", name="Get all invoices", response_model=list[InvoiceItem])
 async def get_invoices_handler(
     filter_query: Annotated[FilterParams, Query()],
-    db: DatabaseDep,
+    invoice_service: InvoiceServiceDep,
 ):
-    invoices = await get_invoices(db, filter_query)
+    invoices = await invoice_service.get_invoices(filter_query)
     return invoices
 
 
 @router.get("/{invoice_id}", name="Get invoice", response_model=InvoiceOut)
-async def get_invoice_handler(invoice_id: str, db: DatabaseDep):
-    invoice = await get_invoice(db, invoice_id)
+async def get_invoice_handler(invoice_id: str, invoice_service: InvoiceServiceDep):
+    invoice = await invoice_service.get_invoice(invoice_id)
     if invoice is None:
-        raise InvoiceNotFound()
+        raise NotFoundException(detail="Invoice not found")
     return invoice
 
 
@@ -43,11 +44,10 @@ async def get_invoice_handler(invoice_id: str, db: DatabaseDep):
 async def create_invoice_handler(
     invoice_data: InvoiceCreate,
     current_user: CurrentUserDep,
-    db: DatabaseDep,
+    invoice_service: InvoiceServiceDep,
 ):
-    new_invoice = await create_invoice(
-        db,
-        {**invoice_data.model_dump(by_alias=False), "poster_id": current_user.id},
+    new_invoice = await invoice_service.create_invoice(
+        {**invoice_data.model_dump(by_alias=False), "poster_id": current_user.id}
     )
     return new_invoice
 
@@ -60,12 +60,20 @@ async def create_invoice_handler(
 async def update_invoice_handler(
     invoice_id: str,
     invoice_data: InvoiceUpdate,
-    db: DatabaseDep,
+    current_user: CurrentUserDep,
+    invoice_service: InvoiceServiceDep,
 ):
-    invoice = await get_invoice(db, invoice_id)
+    invoice = await invoice_service.get_invoice(invoice_id)
+
     if invoice is None:
-        raise InvoiceNotFound()
-    updated_invoice = await update_invoice(db, invoice, invoice_data)
+        raise NotFoundException(detail="Invoice not found")
+
+    if invoice.poster_id != current_user.id:
+        raise ForbiddenException(
+            detail="Not authorized to update this invoice",
+        )
+
+    updated_invoice = await invoice_service.update_invoice(invoice, invoice_data)
     return updated_invoice
 
 
@@ -74,8 +82,15 @@ async def update_invoice_handler(
     name="Delete invoice",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_invoice_handler(invoice_id: str, db: DatabaseDep):
-    invoice = await get_invoice(db, invoice_id)
+async def delete_invoice_handler(
+    invoice_id: str, current_user: CurrentUserDep, invoice_service: InvoiceServiceDep
+):
+    invoice = await invoice_service.get_invoice(invoice_id)
+
     if invoice is None:
-        raise InvoiceNotFound()
-    await delete_invoice(db, invoice)
+        raise NotFoundException(detail="Invoice not found")
+
+    if invoice.poster_id != current_user.id:
+        raise ForbiddenException(detail="Not authorized to delete this invoice")
+
+    await invoice_service.delete_invoice(invoice)

@@ -1,14 +1,6 @@
 from typing import Annotated
 
 from pydantic import BaseModel, Field, create_model
-from pynanoid import generate
-
-ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
-SIZE = 21
-
-
-def generate_id():
-    return generate(ALPHABET, SIZE)
 
 
 def make_new_model(

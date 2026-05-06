@@ -3,12 +3,16 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import TypedDict
 
+from pynanoid import generate
 from sqlalchemy import JSON, Date, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from ..database import Base
-from ..users import models
-from ..utils import generate_id
+
+def generate_id():
+    ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz"
+    SIZE = 21
+    return generate(ALPHABET, SIZE)
+
 
 Address = TypedDict(
     "Address",
@@ -24,6 +28,10 @@ Item = TypedDict(
     "Item",
     {"name": str, "quantity": int, "price": float, "total": float},
 )
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class Invoice(Base):
@@ -53,7 +61,7 @@ class Invoice(Base):
         nullable=False,
         index=True,
     )
-    poster: Mapped[models.User] = relationship(back_populates="invoices")
+    poster: Mapped[User] = relationship(back_populates="invoices")
 
     @property
     def total(self) -> float:
@@ -65,3 +73,28 @@ class Invoice(Base):
     @property
     def payment_due(self) -> datetime:
         return self.date_issued + timedelta(days=self.payment_terms)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        index=True,
+    )
+    first_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(200), nullable=False)
+    profile_image: Mapped[str | None] = mapped_column(
+        String(200),
+        nullable=True,
+        default=None,
+    )
+    invoices: Mapped[list[Invoice]] = relationship(back_populates="poster")
+
+    @property
+    def full_name(self) -> str:
+        return self.first_name + " " + self.last_name

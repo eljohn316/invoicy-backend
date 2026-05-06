@@ -11,9 +11,16 @@ from ..auth import (
 from ..dependencies import DatabaseDep
 from ..exceptions import UnauthorizedException
 from .schemas import Token, UserCreate, UserPrivate, UserPublic
-from .services import create_user, get_user_by_email
+from .services import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+
+def get_user_service(db: DatabaseDep):
+    return UserService(db)
+
+
+UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 
 
 @router.post(
@@ -22,17 +29,17 @@ router = APIRouter(prefix="/users", tags=["users"])
     response_model=UserPublic,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_user_handler(user: UserCreate, db: DatabaseDep):
-    new_user = await create_user(db, user)
+async def create_user_handler(user_data: UserCreate, user_service: UserServiceDep):
+    new_user = await user_service.create_user(user_data)
     return new_user
 
 
 @router.post("/token", name="Authenticate user", response_model=Token)
 async def login_user_handler(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: DatabaseDep,
+    user_service: UserServiceDep,
 ):
-    user = await get_user_by_email(db, form_data.username)
+    user = await user_service.get_user_by_email(form_data.username)
     if user is None:
         raise UnauthorizedException(detail="Invalid email or password")
 
