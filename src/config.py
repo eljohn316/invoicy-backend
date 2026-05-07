@@ -7,7 +7,8 @@ class Settings(BaseSettings):
 
     secret_key: SecretStr
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    # 60 minutes * 24 hours * 7 days = 7 days
+    access_token_expire_minutes: int = 60 * 24 * 7
 
 
 settings = Settings()
