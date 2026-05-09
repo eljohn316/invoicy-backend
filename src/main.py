@@ -39,6 +39,11 @@ app.include_router(invoice_router)
 app.include_router(user_router)
 
 
+@app.get("/utils/heath-check", tags=["utils"])
+async def health_check() -> bool:
+    return True
+
+
 @app.exception_handler(ResponseValidationError)
 async def response_validation_exception_handler(
     request: Request,
