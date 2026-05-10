@@ -6,11 +6,11 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.config import settings
-from src.database import engine
-from src.invoices.router import router as invoice_router
-from src.models import Base
-from src.users.router import router as user_router
+from .config import settings
+from .database import engine
+from .invoices.router import router as invoice_router
+from .models import Base
+from .users.router import router as user_router
 
 
 @asynccontextmanager
