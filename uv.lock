@@ -91,7 +91,7 @@ wheels = [
 [[package]]
 name = "backend"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
     { name = "fastapi", extra = ["standard-no-fastapi-cloud-cli"] },

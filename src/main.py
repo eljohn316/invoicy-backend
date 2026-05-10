@@ -6,11 +6,11 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .config import settings
-from .database import engine
-from .invoices.router import router as invoice_router
-from .models import Base
-from .users.router import router as user_router
+from src.config import settings
+from src.database import engine
+from src.invoices.router import router as invoice_router
+from src.models import Base
+from src.users.router import router as user_router
 
 
 @asynccontextmanager
@@ -37,7 +37,7 @@ app.include_router(invoice_router)
 app.include_router(user_router)
 
 
-@app.get("/utils/heath-check", tags=["utils"])
+@app.get("/utils/health-check", tags=["utils"])
 async def health_check() -> bool:
     return True
 

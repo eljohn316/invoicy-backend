@@ -1,6 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./invoices.db"
+from .config import settings
+
+SQLALCHEMY_DATABASE_URL = (
+    settings.DATABASE_URL
+    if settings.environment == "productino"
+    else "sqlite+aiosqlite:///./invoices.db"
+)
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL,

@@ -1,2 +1,1 @@
-ENVIRONMENT=production
-fastapi run src/main.py
+ENV_FILE=production fastapi run
