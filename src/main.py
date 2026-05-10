@@ -6,6 +6,7 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from src.config import settings
 from src.database import engine
 from src.invoices.router import router as invoice_router
 from src.models import Base
@@ -22,18 +23,15 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="Invoices App API", root_path="/api", lifespan=lifespan)
 
-origins = [
-    "http://localhost:5173",
-    "http://localhost:4173",
-]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if settings.all_cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.all_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 app.include_router(invoice_router)
 app.include_router(user_router)
