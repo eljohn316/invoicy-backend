@@ -2,13 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from .config import settings
 
-SQLALCHEMY_DATABASE_URL = (
-    str(settings.database_url)
-    if settings.environment == "production"
-    else "sqlite+aiosqlite:///./invoices.db"
-)
-
-engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_async_engine(str(settings.database_url))
 
 AsyncSessionLocal = async_sessionmaker(
     engine,
