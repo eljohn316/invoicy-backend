@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from .config import settings
 
 SQLALCHEMY_DATABASE_URL = (
-    settings.DATABASE_URL
-    if settings.environment == "productino"
+    settings.database_url
+    if settings.environment == "production"
     else "sqlite+aiosqlite:///./invoices.db"
 )
 

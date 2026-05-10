@@ -38,18 +38,15 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
-    def DATABASE_URL(self) -> PostgresDsn | str:
-        if self.environment == "local":
-            return "sqlite+aiosqlite:///./invoices.db"
-        else:
-            return PostgresDsn.build(
-                scheme="postgresql+psycopg",
-                username=self.postgres_user,
-                password=self.postgres_password,
-                host=self.postgres_server,
-                port=self.postgres_port,
-                path=self.postgres_db,
-            )
+    def database_url(self) -> PostgresDsn:
+        return PostgresDsn.build(
+            scheme="postgresql+psycopg",
+            username=self.postgres_user,
+            password=self.postgres_password,
+            host=self.postgres_server,
+            port=self.postgres_port,
+            path=self.postgres_db,
+        )
 
 
 settings = Settings()
