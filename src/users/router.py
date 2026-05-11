@@ -3,14 +3,18 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from ..auth import (
-    CurrentUserDep,
-    create_access_token,
-    verify_password,
-)
+from ..auth import CurrentUserDep, create_access_token, verify_password
 from ..dependencies import DatabaseDep
-from ..exceptions import UnauthorizedException
-from .schemas import Token, UserCreate, UserPrivate, UserPublic, UserUpdate
+from ..exceptions import BadRequestException, UnauthorizedException
+from .schemas import (
+    Message,
+    Token,
+    UserCreate,
+    UserPrivate,
+    UserPublic,
+    UserUpdate,
+    UserUpdatePassword,
+)
 from .services import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -71,3 +75,26 @@ async def update_current_user_handler(
 ):
     updated_user = await user_service.update_current_user(current_user, user_data)
     return updated_user
+
+
+@router.patch(
+    "/current-user/password",
+    name="Update currently authenticated user password",
+    response_model=Message,
+)
+async def update_current_user_password_handler(
+    user_password_data: UserUpdatePassword,
+    user_service: UserServiceDep,
+    current_user: CurrentUserDep,
+):
+    verified = verify_password(user_password_data.password, current_user.password_hash)
+    if not verified:
+        raise BadRequestException(detail="Incorrect password")
+
+    if user_password_data.password == user_password_data.new_password:
+        raise BadRequestException(
+            detail="New password cannot be the same as the current one"
+        )
+
+    await user_service.update_current_user_password(current_user, user_password_data)
+    return Message(message="Password updated successfully")

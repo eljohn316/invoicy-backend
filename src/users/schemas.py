@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -40,5 +40,21 @@ class UserPublic(BaseSchemaModel):
     full_name: str
 
 
+class UserUpdatePassword(BaseSchemaModel):
+    password: str = Field(min_length=8)
+    new_password: str = Field(min_length=8)
+    new_confirm_password: str = Field(min_length=8)
+
+    @model_validator(mode="after")
+    def check_passwords_match(self):
+        if self.new_password != self.new_confirm_password:
+            raise ValueError("New passwords do not match")
+        return self
+
+
 class UserPrivate(UserPublic):
     email: EmailStr
+
+
+class Message(BaseModel):
+    message: str
