@@ -26,6 +26,12 @@ class UserCreate(UserBase):
     password: str = Field(min_length=8)
 
 
+class UserUpdate(BaseSchemaModel):
+    first_name: str | None = Field(default=None, min_length=1, max_length=50)
+    last_name: str | None = Field(default=None, min_length=1, max_length=50)
+    email: EmailStr | None = Field(default=None, max_length=120)
+
+
 class UserPublic(BaseSchemaModel):
     id: int
     profile_image: str | None
@@ -36,10 +42,3 @@ class UserPublic(BaseSchemaModel):
 
 class UserPrivate(UserPublic):
     email: EmailStr
-
-
-class UserUpdate(BaseSchemaModel):
-    first_name: str | None = Field(default=None, min_length=1, max_length=50)
-    last_name: str | None = Field(default=None, min_length=1, max_length=50)
-    email: EmailStr | None = Field(default=None, max_length=120)
-    profile_image: str | None = Field(default=None, min_length=1, max_length=200)

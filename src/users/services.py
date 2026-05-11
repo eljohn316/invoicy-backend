@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .. import models
 from ..auth import hash_password
-from .schemas import UserCreate
+from .schemas import UserCreate, UserUpdate
 
 
 class UserService:
@@ -32,6 +32,14 @@ class UserService:
         await self._db.refresh(new_user)
 
         return new_user
+
+    async def update_current_user(self, user: models.User, user_data: UserUpdate):
+        user_data_dict = user_data.model_dump(by_alias=False, exclude_unset=True)
+        for field, value in user_data_dict.items():
+            setattr(user, field, value)
+        await self._db.commit()
+        await self._db.refresh(user)
+        return user
 
     async def get_user_by_email(self, email: str):
         result = await self._db.execute(

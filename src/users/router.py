@@ -10,7 +10,7 @@ from ..auth import (
 )
 from ..dependencies import DatabaseDep
 from ..exceptions import UnauthorizedException
-from .schemas import Token, UserCreate, UserPrivate, UserPublic
+from .schemas import Token, UserCreate, UserPrivate, UserPublic, UserUpdate
 from .services import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -57,3 +57,17 @@ async def login_user_handler(
 )
 async def get_current_user_handler(current_user: CurrentUserDep):
     return current_user
+
+
+@router.patch(
+    "/current-user",
+    name="Update currently authenticated user",
+    response_model=UserPrivate,
+)
+async def update_current_user_handler(
+    user_data: UserUpdate,
+    user_service: UserServiceDep,
+    current_user: CurrentUserDep,
+):
+    updated_user = await user_service.update_current_user(current_user, user_data)
+    return updated_user
