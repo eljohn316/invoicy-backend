@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Header, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from ..auth import CurrentUserDep, create_access_token, verify_password
@@ -98,3 +98,20 @@ async def update_current_user_password_handler(
 
     await user_service.update_current_user_password(current_user, user_password_data)
     return Message(message="Password updated successfully")
+
+
+@router.delete(
+    "/current-user",
+    name="Delete currently authenticated user",
+    response_model=Message,
+)
+async def delete_current_user(
+    x_confirm_password: Annotated[str, Header(min_length=8)],
+    user_service: UserServiceDep,
+    current_user: CurrentUserDep,
+):
+    verified = verify_password(x_confirm_password, current_user.password_hash)
+    if not verified:
+        raise BadRequestException(detail="Invalid password")
+    await user_service.delete_user(current_user)
+    return Message(message="User successfully deleted")

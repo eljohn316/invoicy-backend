@@ -45,6 +45,10 @@ class UserService:
         await self._db.commit()
         await self._db.refresh(user)
 
+    async def delete_user(self, user: models.User):
+        await self._db.delete(user)
+        await self._db.commit()
+
     async def get_user_by_email(self, email: str):
         result = await self._db.execute(
             select(models.User).where(models.User.email == email)
