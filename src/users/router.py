@@ -114,4 +114,4 @@ async def delete_current_user(
     if not verified:
         raise BadRequestException(detail="Invalid password")
     await user_service.delete_user(current_user)
-    return Message(message="User successfully deleted")
+    return Message(message="Account successfully deleted")
