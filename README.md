@@ -13,8 +13,8 @@ This project originated from a [Frontend Mentor challenge](https://www.frontendm
 - [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
 - [**SQLAlchemy**](https://www.sqlalchemy.org/) for the Python SQL database interactions (ORM).
 - [**Pydantic**](https://docs.pydantic.dev) used by FastAPI, for the data validation and settings management.
-- [**PostgreSQL**](https://www.postgresql.org) as database.
-- [**Docker**](https://www.docker.com/) for running a postgresql container locally.
+- [**PostgreSQL**](https://www.postgresql.org) as SQL database.
+- [**Docker**](https://www.docker.com/) for running a PostgreSQL container locally.
 - [**AWS EC2**](https://aws.amazon.com/pm/ec2/) for deployment.
 
 ## Development
@@ -70,9 +70,10 @@ This project originated from a [Frontend Mentor challenge](https://www.frontendm
 
 ## Links
 
-- [API Documentation]()
-- [Frontend Demo]()
-- [Frontend Repo](https://github.com/eljohn316/invoicy-frontend)
+- [API Documentation](http://18.140.255.93:8000/docs)
+- Frontend
+  - [Live URL]()
+  - [Repository](https://github.com/eljohn316/invoicy-frontend)
 
 ## Contributing
 
