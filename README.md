@@ -70,9 +70,9 @@ This project originated from a [Frontend Mentor challenge](https://www.frontendm
 
 ## Links
 
-- [API Documentation](http://18.140.255.93:8000/docs)
+- [API Documentation URL](http://18.140.255.93:8000/docs)
 - Frontend
-  - [Live URL]()
+  - [Live Demo URL](https://invoicy-five.vercel.app)
   - [Repository](https://github.com/eljohn316/invoicy-frontend)
 
 ## Contributing
