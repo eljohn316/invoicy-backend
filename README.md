@@ -6,24 +6,24 @@ This project provides a RESTful API for an invoicing application. It allows user
 
 ## Motivation
 
-This project originated from a [Frontend Mentor challenge](https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl), to which I added additional features to enhance functionality. The primary motivation was to learn FastAPI and build a robust backend service to support a frontend invoicing application.
+This project originated from a [Frontend Mentor challenge](https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl), to which I added additional features to enhance functionality. The primary motivation was to learn full‑stack development by building a complete invoicing application with React on the frontend (housed in a [separate repository](https://github.com/eljohn316/invoicy-frontend)) and FastAPI on the backend.
 
 ## Technology Stack
 
 - [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
 - [**SQLAlchemy**](https://www.sqlalchemy.org/) for the Python SQL database interactions (ORM).
 - [**Pydantic**](https://docs.pydantic.dev) used by FastAPI, for the data validation and settings management.
-- [**SQLite**](https://sqlite.org/index.html) as the development SQL database.
-- [**PostgreSQL**](https://www.postgresql.org) as the production SQL database.
+- [**PostgreSQL**](https://www.postgresql.org) as database.
+- [**Docker**](https://www.docker.com/) for running a postgresql container locally.
 - [**AWS EC2**](https://aws.amazon.com/pm/ec2/) for deployment.
 
-## Quick Start
+## Development
 
 1. Clone the repository:
 
    ```bash
-   $ git clone <repository-url>
-   $ cd invoice-app/backend
+   $ git clone https://github.com/eljohn316/invoicy-backend
+   $ cd invoice-backend
    ```
 
 2. Install dependencies with uv:
@@ -32,25 +32,47 @@ This project originated from a [Frontend Mentor challenge](https://www.frontendm
    $ uv sync
    ```
 
-3. Set up the database:
-   - Configure your database settings in `src/config.py`
-   - Run database migrations if applicable
+3. Create .env
 
-## Usage
+   ```python
+   # Environment: local, staging, production
+   ENVIRONMENT="local"
+   SECRET_KEY="changethis"
 
-1. Start the FastAPI server:
+   CORS_ORIGINS="http://localhost:5173,http://localhost:4173"
 
-   ```bash
-   $ fastapi dev src/main.py
+   POSTGRES_SERVER="localhost"
+   POSTGRES_PORT="5432"
+   POSTGRES_DB="invoicy"
+   POSTGRES_USER="postgres"
+   POSTGRES_PASSWORD="changethis"
    ```
 
-2. Access the API documentation at `http://localhost:8000/docs`
+4. Configure your database
+   - If you have [Docker](https://www.docker.com/) installed in your local machine, you can just run a postgres container and you're all set up.
+
+     ```bash
+     $ docker compose up
+     ```
+
+   - You can also download postgres in your local machine. Follow the steps [here](https://www.postgresql.org/download/)
+
+5. Create database tables
+
+   ```bash
+   $ uv run alembic upgrade head
+   ```
+
+6. Run the app
+   ```bash
+   $ fastapi dev
+   ```
 
 ## Links
 
 - [API Documentation]()
 - [Frontend Demo]()
-- [Frontend Repo]()
+- [Frontend Repo](https://github.com/eljohn316/invoicy-frontend)
 
 ## Contributing
 
