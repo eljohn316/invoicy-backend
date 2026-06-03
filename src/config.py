@@ -31,10 +31,10 @@ class Settings(BaseSettings):
         return [str(origin).rstrip("/") for origin in self.cors_origins]
 
     postgres_server: str
-    postgres_port: int = 5432
     postgres_user: str
     postgres_password: str = ""
     postgres_db: str = ""
+    postgres_query: str = "sslmode=require&channel_binding=require"
 
     @computed_field
     @property
@@ -44,8 +44,8 @@ class Settings(BaseSettings):
             username=self.postgres_user,
             password=self.postgres_password,
             host=self.postgres_server,
-            port=self.postgres_port,
             path=self.postgres_db,
+            query=self.postgres_query,
         )
 
 
